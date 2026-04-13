@@ -22,11 +22,9 @@ function updateDisplay() {
         if (actionBtn) actionBtn.innerText = "=";
     } else {
         const varLabel = solverStep === 0 ? "A" : (solverStep === 1 ? "B" : "C");
-        const modeLabel = currentMode === 'eq1' ? "EQUAÇÃO 1º" : "EQUAÇÃO 2º";
-        exprEl.innerText = `${modeLabel} | DIGITE ${varLabel}:`;
+        exprEl.innerText = `VARIAVEL [${varLabel}]`; // Exibição mais industrial
         resEl.innerText = (solverData[varLabel.toLowerCase()] || "") + "_";
 
-        // Lógica do texto do botão
         if (actionBtn) {
             const isLastStep = (currentMode === 'eq1' && solverStep === 1) || 
                               (currentMode === 'eq2' && solverStep === 2);
@@ -98,7 +96,8 @@ function calculate() {
                 solverStep = 1;
             } else {
                 executeSolver1();
-                currentMode = 'calc'; // Reseta após resolver
+                solverStep = 0; // Reinicia o ciclo na mesma equação
+                solverData = { a: "", b: "", c: "" };
             }
         } else if (currentMode === 'eq2') {
             if (solverStep === 0) {
@@ -108,7 +107,8 @@ function calculate() {
                 solverStep = 2;
             } else {
                 executeSolver2();
-                currentMode = 'calc';
+                solverStep = 0; // Reinicia o ciclo na mesma equação
+                solverData = { a: "", b: "", c: "" };
             }
         }
         updateDisplay();

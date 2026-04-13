@@ -113,9 +113,10 @@ h1 {
 }
 
 .expression {
-    font-size: 16px;
-    color: var(--border-dark);
+    font-size: 24px;
+    color: var(--terminal-green);
     font-family: monospace;
+    opacity: 0.8;
 }
 
 .result {
@@ -155,8 +156,7 @@ h1 {
 .sci { font-size: 16px; color: #404040; }
 .action { color: #800000; }
 .equal { 
-    grid-row: span 2; 
-    height: auto; 
+    height: 80px; 
     background: #008000;
     color: white;
 }
