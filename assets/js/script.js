@@ -54,11 +54,10 @@ function backspace() {
 
 function calculate() {
     let fullExpression = expression + currentInput;
-    if (fullExpression === "") return;
+    if (fullExpression === "" || fullExpression.trim() === "") return;
 
     try {
-        // Sanitizar e preparar para eval (ou usar algo mais seguro se necessário)
-        // Substituindo símbolos visuais por operadores JS
+        // Sanitizar e preparar para eval
         let evalExpr = fullExpression
             .replace(/×/g, '*')
             .replace(/÷/g, '/')
@@ -69,9 +68,16 @@ function calculate() {
         let closeBrackets = (evalExpr.match(/\)/g) || []).length;
         for (let i = 0; i < openBrackets - closeBrackets; i++) {
             evalExpr += ")";
+            fullExpression += ")";
         }
 
         const result = eval(evalExpr);
+        
+        // Verificar se o resultado é válido (não NaN ou Infinity)
+        if (isNaN(result) || !isFinite(result)) {
+            throw new Error("Invalid Result");
+        }
+
         const formattedResult = Number.isInteger(result) ? result : result.toFixed(4).replace(/\.?0+$/, "");
         
         saveHistory(`${fullExpression} = ${formattedResult}`);
@@ -80,8 +86,13 @@ function calculate() {
         currentInput = formattedResult.toString();
         updateDisplay();
     } catch (e) {
-        document.getElementById('result').innerText = "Erro";
-        setTimeout(clearDisplay, 1500);
+        document.getElementById('result').innerText = "ERROR";
+        // Não apaga a expressão imediatamente para o usuário ver o erro
+        setTimeout(() => {
+            if (document.getElementById('result').innerText === "ERROR") {
+                clearDisplay();
+            }
+        }, 2000);
     }
 }
 
@@ -171,8 +182,9 @@ function executeSolver2() {
 
 // Histórico
 function toggleHistory() {
-    const sb = document.getElementById('history-sidebar');
-    sb.style.display = sb.style.display === 'block' ? 'none' : 'block';
+    // Agora o histórico está embutido, mas podemos manter a função se quisermos esconder/mostrar
+    const sb = document.querySelector('.history-container-embedded');
+    sb.style.display = sb.style.display === 'none' ? 'flex' : 'none';
 }
 
 function saveHistory(entry) {
@@ -183,20 +195,28 @@ function saveHistory(entry) {
 }
 
 function updateHistoryUI() {
-    const list = document.getElementById('history-list');
-    list.innerHTML = history.length ? "" : "<p style='color: var(--text-secondary); font-size: 14px; text-align: center; margin-top: 20px;'>Sem histórico</p>";
+    const list = document.getElementById('history-list-embedded');
+    if (!list) return;
+    
+    list.innerHTML = history.length ? "" : "<p style='color: var(--text-secondary); font-size: 13px; text-align: center; margin-top: 20px;'>Sem atividade recente</p>";
+    
     history.forEach(item => {
         const div = document.createElement('div');
-        div.style.padding = "12px";
-        div.style.borderBottom = "1px solid var(--glass-border)";
-        div.style.fontSize = "14px";
+        div.className = "history-item";
+        div.style.padding = "10px";
+        div.style.borderBottom = "1px solid rgba(255,255,255,0.05)";
+        div.style.fontSize = "13px";
+        div.style.fontFamily = "monospace";
+        div.style.color = "var(--text-secondary)";
         div.innerText = item;
         list.appendChild(div);
     });
 }
 
 function clearHistory() {
-    history = [];
-    localStorage.removeItem('calc-history');
-    updateHistoryUI();
+    if (confirm("Deseja limpar o histórico?")) {
+        history = [];
+        localStorage.removeItem('calc-history');
+        updateHistoryUI();
+    }
 }

@@ -14,75 +14,75 @@
     <div class="background-glow"></div>
     
     <div class="glass-container" id="calculator">
-        <header>
-            <h1>AlgebraCore</h1>
-            <div class="modes">
-                <button class="mode-btn active" onclick="setMode('calc')">Calculadora</button>
-                <button class="mode-btn" onclick="setMode('eq1')">1º Grau</button>
-                <button class="mode-btn" onclick="setMode('eq2')">2º Grau</button>
+        <div class="atm-layout">
+            <!-- Lado Esquerdo: Controles -->
+            <div class="controls-panel">
+                <header>
+                    <h1>AlgebraCore</h1>
+                </header>
+                
+                <div id="calc-grid" class="grid-container">
+                    <!-- Funções Científicas -->
+                    <button class="btn sci" onclick="addFunc('Math.sin(')">sin</button>
+                    <button class="btn sci" onclick="addFunc('Math.cos(')">cos</button>
+                    <button class="btn sci" onclick="addFunc('Math.tan(')">tan</button>
+                    <button class="btn sci" onclick="addFunc('Math.log10(')">log</button>
+                    
+                    <button class="btn sci" onclick="addFunc('Math.sqrt(')">√</button>
+                    <button class="btn sci" onclick="addOp('**')">^</button>
+                    <button class="btn sci" onclick="addChar('(')">(</button>
+                    <button class="btn sci" onclick="addChar(')')">)</button>
+
+                    <button class="btn action" onclick="clearDisplay()">AC</button>
+                    <button class="btn action" onclick="backspace()">DEL</button>
+                    <button class="btn op" onclick="addOp('/')">÷</button>
+                    <button class="btn op" onclick="addOp('*')">×</button>
+
+                    <button class="btn num" onclick="addChar('7')">7</button>
+                    <button class="btn num" onclick="addChar('8')">8</button>
+                    <button class="btn num" onclick="addChar('9')">9</button>
+                    <button class="btn op" onclick="addOp('-')">−</button>
+
+                    <button class="btn num" onclick="addChar('4')">4</button>
+                    <button class="btn num" onclick="addChar('5')">5</button>
+                    <button class="btn num" onclick="addChar('6')">6</button>
+                    <button class="btn op" onclick="addOp('+')">+</button>
+
+                    <button class="btn num" onclick="addChar('1')">1</button>
+                    <button class="btn num" onclick="addChar('2')">2</button>
+                    <button class="btn num" onclick="addChar('3')">3</button>
+                    <button class="btn equal" onclick="calculate()">=</button>
+
+                    <button class="btn num double" onclick="addChar('0')">0</button>
+                    <button class="btn num" onclick="addChar('.')">.</button>
+                </div>
             </div>
-        </header>
 
-        <div class="display">
-            <div id="expression" class="expression"></div>
-            <div id="result" class="result">0</div>
+            <!-- Lado Direito: Tela e Dados -->
+            <div class="screen-panel">
+                <div class="modes">
+                    <button class="mode-btn active" onclick="setMode('calc')">Calculadora</button>
+                    <button class="mode-btn" onclick="setMode('eq1')">1º Grau</button>
+                    <button class="mode-btn" onclick="setMode('eq2')">2º Grau</button>
+                </div>
+
+                <div class="display">
+                    <div id="expression" class="expression"></div>
+                    <div id="result" class="result">0</div>
+                </div>
+
+                <div id="solver-panel" class="solver-panel" style="display: none;">
+                    <!-- Injetado por JS -->
+                </div>
+
+                <div class="history-container-embedded">
+                    <h3>Histórico Recente</h3>
+                    <div id="history-list-embedded"></div>
+                    <button class="clear-hist-btn" onclick="clearHistory()">Limpar</button>
+                </div>
+            </div>
         </div>
-
-        <!-- Calculadora Principal -->
-        <div id="calc-grid" class="grid-container">
-            <!-- Linha 1: Funções Científicas -->
-            <button class="btn sci" onclick="addFunc('Math.sin(')">sin</button>
-            <button class="btn sci" onclick="addFunc('Math.cos(')">cos</button>
-            <button class="btn sci" onclick="addFunc('Math.tan(')">tan</button>
-            <button class="btn sci" onclick="addFunc('Math.log10(')">log</button>
-            
-            <!-- Linha 2 -->
-            <button class="btn sci" onclick="addFunc('Math.sqrt(')">√</button>
-            <button class="btn sci" onclick="addOp('**')">^</button>
-            <button class="btn sci" onclick="addChar('(')">(</button>
-            <button class="btn sci" onclick="addChar(')')">)</button>
-
-            <!-- Teclado Numérico e Ops -->
-            <button class="btn action" onclick="clearDisplay()">AC</button>
-            <button class="btn action" onclick="backspace()">DEL</button>
-            <button class="btn op" onclick="addOp('/')">÷</button>
-            <button class="btn op" onclick="addOp('*')">×</button>
-
-            <button class="btn num" onclick="addChar('7')">7</button>
-            <button class="btn num" onclick="addChar('8')">8</button>
-            <button class="btn num" onclick="addChar('9')">9</button>
-            <button class="btn op" onclick="addOp('-')">−</button>
-
-            <button class="btn num" onclick="addChar('4')">4</button>
-            <button class="btn num" onclick="addChar('5')">5</button>
-            <button class="btn num" onclick="addChar('6')">6</button>
-            <button class="btn op" onclick="addOp('+')">+</button>
-
-            <button class="btn num" onclick="addChar('1')">1</button>
-            <button class="btn num" onclick="addChar('2')">2</button>
-            <button class="btn num" onclick="addChar('3')">3</button>
-            <button class="btn equal" onclick="calculate()">=</button>
-
-            <button class="btn num double" onclick="addChar('0')">0</button>
-            <button class="btn num" onclick="addChar('.')">.</button>
-        </div>
-
-        <!-- Solucionadores de Equações (Injetados por JS ou Ocultos) -->
-        <div id="solver-panel" class="solver-panel" style="display: none;">
-            <!-- Conteúdo será alterado dinamicamente -->
-        </div>
-
-        <button class="history-toggle" onclick="toggleHistory()">Histórico</button>
     </div>
-
-    <!-- Barra Lateral de Histórico -->
-    <aside id="history-sidebar" class="history-sidebar">
-        <div class="history-header">
-            <h2>Histórico</h2>
-            <button onclick="clearHistory()">Limpar</button>
-        </div>
-        <div id="history-list"></div>
-    </aside>
 </main>
 
 <script src="assets/js/script.js"></script>
