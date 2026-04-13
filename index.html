@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>AlgebraCore v1.0.0</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+    <h1>AlgebraCore 1.0.0</h1>
+
+    <div class="menu">
+        <button onclick="trocar('operacoes')">Operações Principais</button>
+        <button onclick="trocar('grau1')">Equação 1º Grau</button>
+        <button onclick="trocar('grau2')">Equação 2º Grau</button>
+    </div>
+
+    <hr>
+
+    <div id="operacoes" class="tela">
+        <h3>Operações Principais</h3>
+        <input type="number" id="n1" placeholder="N1">
+        <select id="op">
+            <option>+</option><option>-</option><option>*</option><option>/</option>
+        </select>
+        <input type="number" id="n2" placeholder="N2">
+        <button onclick="calcBasico()" class="btn-calc">Calcular</button>
+        <button onclick="limpar('histBasico')" class="btn-limpar">Limpar Histórico</button>
+        <div id="histBasico" class="historico-container"></div>
+    </div>
+
+    <div id="grau1" class="tela" style="display:none;">
+        <h3>Equação 1º Grau (ax + b = 0)</h3>
+        <span>a:</span> <input type="number" id="a1">
+        <span>b:</span> <input type="number" id="b1">
+        <button onclick="resolver1()" class="btn-calc">Resolver</button>
+        <button onclick="limpar('hist1')" class="btn-limpar">Limpar Histórico</button>
+        <div id="hist1" class="historico-container"></div>
+    </div>
+
+    <div id="grau2" class="tela" style="display:none;">
+        <h3>Equação 2º Grau (ax² + bx + c = 0)</h3>
+        <span>a:</span> <input type="number" id="a2">
+        <span>b:</span> <input type="number" id="b2">
+        <span>c:</span> <input type="number" id="c2">
+        <button onclick="resolver2()" class="btn-calc">Calcular Raízes</button>
+        <button onclick="limpar('hist2')" class="btn-limpar">Limpar Histórico</button>
+        <div id="hist2" class="historico-container"></div>
+    </div>
+
+    <script src="assets/js/script.js"></script>
+</body>
+</html>

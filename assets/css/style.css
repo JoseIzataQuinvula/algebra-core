@@ -1,0 +1,50 @@
+body {
+    background-color: white;
+    color: black;
+    font-family: Arial, sans-serif;
+    padding: 30px;
+    margin: 0;
+}
+
+h1 { font-size: 26px; border-bottom: 2px solid black; display: inline-block; margin-bottom: 20px; }
+
+/* Mantém os itens na mesma linha */
+input, select, button {
+    border: 1px solid black;
+    padding: 10px;
+    margin: 5px 2px;
+    display: inline-block; 
+    vertical-align: middle;
+}
+
+/* Larguras específicas para não quebrar a linha */
+input[type="number"] { width: 120px; }
+select { width: 60px; }
+
+.btn-calc { background: black; color: white; cursor: pointer; font-weight: bold; width: auto; }
+.btn-limpar { background: white; border: 1px dashed gray; cursor: pointer; width: auto; font-size: 12px; margin-left: 10px; }
+
+.tela { min-height: 500px; margin-top: 20px; }
+
+.historico-container {
+    margin-top: 25px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.card {
+    border: 1px solid black;
+    padding: 15px;
+    background: #fdfdfd;
+    width: fit-content;
+    min-width: 320px;
+    font-family: monospace;
+}
+
+.card.erro {
+    border-color: red;
+    background: #fff5f5;
+    color: red;
+    font-weight: bold;
+}
