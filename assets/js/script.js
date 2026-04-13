@@ -1,109 +1,202 @@
-// Carregar dados assim que a página abrir
-window.onload = function() {
-    const ultimaTela = localStorage.getItem('telaAtiva') || 'operacoes';
-    trocar(ultimaTela);
+let expression = "";
+let currentInput = "";
+let history = JSON.parse(localStorage.getItem('calc-history')) || [];
 
-    // Recuperar históricos salvos
-    ['histBasico', 'hist1', 'hist2'].forEach(id => {
-        const salvo = localStorage.getItem(id);
-        if (salvo) document.getElementById(id).innerHTML = salvo;
-    });
+// Inicialização
+window.onload = () => {
+    updateHistoryUI();
 };
 
-function trocar(id) {
-    document.querySelectorAll('.tela').forEach(t => t.style.display = 'none');
-    document.getElementById(id).style.display = 'block';
-    localStorage.setItem('telaAtiva', id); // Salva a aba atual
+function updateDisplay() {
+    document.getElementById('expression').innerText = expression;
+    document.getElementById('result').innerText = currentInput || "0";
 }
 
-function limpar(id) {
-    document.getElementById(id).innerHTML = "";
-    localStorage.removeItem(id); // Apaga do histórico permanente
+function addChar(char) {
+    if (currentInput === "0" && char !== ".") currentInput = "";
+    currentInput += char;
+    updateDisplay();
 }
 
-function adicionarCard(containerId, msg, ehErro = false) {
-    const container = document.getElementById(containerId);
-    const card = document.createElement('div');
-    card.className = ehErro ? 'card erro' : 'card';
-    card.innerText = msg;
-    container.prepend(card);
+function addOp(op) {
+    if (currentInput === "" && expression === "") return;
     
-    // Salva o estado atual do HTML do histórico
-    localStorage.setItem(containerId, container.innerHTML);
-}
-
-// 1. Operações
-function calcBasico() {
-    const v1 = document.getElementById('n1').value;
-    const v2 = document.getElementById('n2').value;
-    const op = document.getElementById('op').value;
-
-    if (v1 === "" || v2 === "") {
-        adicionarCard('histBasico', "Erro: Preencha todos os campos.", true);
-        return;
-    }
-
-    const n1 = parseFloat(v1);
-    const n2 = parseFloat(v2);
-    let r;
-
-    if (op === '/' && n2 === 0) {
-        adicionarCard('histBasico', `${n1} / 0 = Erro: Divisão por zero`, true);
-        return;
-    }
-
-    if (op === '+') r = n1 + n2;
-    if (op === '-') r = n1 - n2;
-    if (op === '*') r = n1 * n2;
-    if (op === '/') r = n1 / n2;
-
-    adicionarCard('histBasico', `${n1} ${op} ${n2} = ${r}`);
-}
-
-// 2. 1º Grau
-function resolver1() {
-    const va = document.getElementById('a1').value;
-    const vb = document.getElementById('b1').value;
-    if (va === "" || vb === "") {
-        adicionarCard('hist1', "Erro: Insira valores de a e b.", true);
-        return;
-    }
-    const a = parseFloat(va);
-    const b = parseFloat(vb);
-
-    if (a === 0) {
-        adicionarCard('hist1', `0x + ${b} = 0 | Erro: 'a' não pode ser 0`, true);
+    // Se houver um resultado anterior no display, usa ele como base
+    if (currentInput !== "") {
+        expression += currentInput + " " + op + " ";
+        currentInput = "";
     } else {
-        adicionarCard('hist1', `${a}x + ${b} = 0 | x = ${(-b / a).toFixed(2)}`);
+        // Substituir o último operador
+        expression = expression.trim().slice(0, -1) + op + " ";
+    }
+    updateDisplay();
+}
+
+function addFunc(func) {
+    expression += func;
+    updateDisplay();
+}
+
+function clearDisplay() {
+    expression = "";
+    currentInput = "";
+    updateDisplay();
+}
+
+function backspace() {
+    if (currentInput !== "") {
+        currentInput = currentInput.slice(0, -1);
+    } else if (expression !== "") {
+        expression = expression.trim().slice(0, -1);
+    }
+    updateDisplay();
+}
+
+function calculate() {
+    let fullExpression = expression + currentInput;
+    if (fullExpression === "") return;
+
+    try {
+        // Sanitizar e preparar para eval (ou usar algo mais seguro se necessário)
+        // Substituindo símbolos visuais por operadores JS
+        let evalExpr = fullExpression
+            .replace(/×/g, '*')
+            .replace(/÷/g, '/')
+            .replace(/−/g, '-');
+
+        // Adicionar parênteses faltantes se necessário
+        let openBrackets = (evalExpr.match(/\(/g) || []).length;
+        let closeBrackets = (evalExpr.match(/\)/g) || []).length;
+        for (let i = 0; i < openBrackets - closeBrackets; i++) {
+            evalExpr += ")";
+        }
+
+        const result = eval(evalExpr);
+        const formattedResult = Number.isInteger(result) ? result : result.toFixed(4).replace(/\.?0+$/, "");
+        
+        saveHistory(`${fullExpression} = ${formattedResult}`);
+        
+        expression = "";
+        currentInput = formattedResult.toString();
+        updateDisplay();
+    } catch (e) {
+        document.getElementById('result').innerText = "Erro";
+        setTimeout(clearDisplay, 1500);
     }
 }
 
-// 3. 2º Grau
-function resolver2() {
-    const va = document.getElementById('a2').value;
-    const vb = document.getElementById('b2').value;
-    const vc = document.getElementById('c2').value;
+// Alternância de Modos
+function setMode(mode) {
+    const grid = document.getElementById('calc-grid');
+    const solver = document.getElementById('solver-panel');
+    const btns = document.querySelectorAll('.mode-btn');
 
-    if (va === "" || vb === "" || vc === "") {
-        adicionarCard('hist2', "Erro: Preencha a, b e c.", true);
-        return;
+    btns.forEach(b => b.classList.remove('active'));
+
+    if (mode === 'calc') {
+        grid.style.display = 'grid';
+        solver.style.display = 'none';
+        btns[0].classList.add('active');
+    } else if (mode === 'eq1') {
+        grid.style.display = 'none';
+        solver.style.display = 'flex';
+        btns[1].classList.add('active');
+        renderSolver1();
+    } else if (mode === 'eq2') {
+        grid.style.display = 'none';
+        solver.style.display = 'flex';
+        btns[2].classList.add('active');
+        renderSolver2();
     }
+}
 
-    const a = parseFloat(va);
-    const b = parseFloat(vb);
-    const c = parseFloat(vc);
+function renderSolver1() {
+    document.getElementById('solver-panel').innerHTML = `
+        <h3>Equação do 1º Grau</h3>
+        <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 10px;">ax + b = 0</p>
+        <div class="input-group"><label>a</label><input type="number" id="a1" placeholder="Valor de a"></div>
+        <div class="input-group"><label>b</label><input type="number" id="b1" placeholder="Valor de b"></div>
+        <button class="solve-btn" onclick="executeSolver1()">Resolver</button>
+    `;
+}
 
+function renderSolver2() {
+    document.getElementById('solver-panel').innerHTML = `
+        <h3>Equação do 2º Grau</h3>
+        <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 10px;">ax² + bx + c = 0</p>
+        <div class="input-group"><label>a</label><input type="number" id="a2" placeholder="Valor de a"></div>
+        <div class="input-group"><label>b</label><input type="number" id="b2" placeholder="Valor de b"></div>
+        <div class="input-group"><label>c</label><input type="number" id="c2" placeholder="Valor de c"></div>
+        <button class="solve-btn" onclick="executeSolver2()">Calcular Raízes</button>
+    `;
+}
+
+function executeSolver1() {
+    const a = parseFloat(document.getElementById('a1').value);
+    const b = parseFloat(document.getElementById('b1').value);
+
+    if (isNaN(a) || isNaN(b)) return alert("Preencha todos os campos");
+    
     if (a === 0) {
-        adicionarCard('hist2', "Erro: 'a' não pode ser zero em equações de 2º grau.", true);
-        return;
+        alert("O valor de 'a' não pode ser zero");
+    } else {
+        const x = -b / a;
+        const res = `x = ${x.toFixed(2)}`;
+        saveHistory(`${a}x + ${b} = 0 → ${res}`);
+        document.getElementById('result').innerText = res;
     }
+}
+
+function executeSolver2() {
+    const a = parseFloat(document.getElementById('a2').value);
+    const b = parseFloat(document.getElementById('b2').value);
+    const c = parseFloat(document.getElementById('c2').value);
+
+    if (isNaN(a) || isNaN(b) || isNaN(c)) return alert("Preencha todos os campos");
+
+    if (a === 0) return alert("'a' não pode ser zero");
 
     const delta = (b * b) - (4 * a * c);
+    let res;
     if (delta < 0) {
-        adicionarCard('hist2', `Δ Negativo (${delta}) | Sem raízes reais.`, true);
+        res = "Sem raízes reais";
     } else {
         const x1 = (-b + Math.sqrt(delta)) / (2 * a);
         const x2 = (-b - Math.sqrt(delta)) / (2 * a);
-        adicionarCard('hist2', `${a}x² + ${b}x + ${c} = 0 | x1: ${x1.toFixed(2)} | x2: ${x2.toFixed(2)}`);
+        res = `x1: ${x1.toFixed(2)} | x2: ${x2.toFixed(2)}`;
     }
+    saveHistory(`${a}x² + ${b}x + ${c} = 0 → ${res}`);
+    document.getElementById('result').innerText = res;
 }
+
+// Histórico
+function toggleHistory() {
+    const sb = document.getElementById('history-sidebar');
+    sb.style.display = sb.style.display === 'block' ? 'none' : 'block';
+}
+
+function saveHistory(entry) {
+    history.unshift(entry);
+    if (history.length > 20) history.pop();
+    localStorage.setItem('calc-history', JSON.stringify(history));
+    updateHistoryUI();
+}
+
+function updateHistoryUI() {
+    const list = document.getElementById('history-list');
+    list.innerHTML = history.length ? "" : "<p style='color: var(--text-secondary); font-size: 14px; text-align: center; margin-top: 20px;'>Sem histórico</p>";
+    history.forEach(item => {
+        const div = document.createElement('div');
+        div.style.padding = "12px";
+        div.style.borderBottom = "1px solid var(--glass-border)";
+        div.style.fontSize = "14px";
+        div.innerText = item;
+        list.appendChild(div);
+    });
+}
+
+function clearHistory() {
+    history = [];
+    localStorage.removeItem('calc-history');
+    updateHistoryUI();
+}

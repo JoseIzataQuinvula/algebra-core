@@ -1,50 +1,243 @@
-body {
-    background-color: white;
-    color: black;
-    font-family: Arial, sans-serif;
-    padding: 30px;
+:root {
+    --bg-color: #0c0d12;
+    --glass-bg: rgba(255, 255, 255, 0.03);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --accent-color: #4f46e5;
+    --text-primary: #ffffff;
+    --text-secondary: #94a3b8;
+    --btn-num: rgba(255, 255, 255, 0.05);
+    --btn-op: rgba(79, 70, 229, 0.2);
+    --btn-sci: rgba(255, 255, 255, 0.1);
+    --btn-equal: #4f46e5;
+}
+
+* {
+    box-sizing: border-box;
     margin: 0;
+    padding: 0;
+    font-family: 'Outfit', sans-serif;
 }
 
-h1 { font-size: 26px; border-bottom: 2px solid black; display: inline-block; margin-bottom: 20px; }
-
-/* Mantém os itens na mesma linha */
-input, select, button {
-    border: 1px solid black;
-    padding: 10px;
-    margin: 5px 2px;
-    display: inline-block; 
-    vertical-align: middle;
+body {
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    overflow: hidden;
 }
 
-/* Larguras específicas para não quebrar a linha */
-input[type="number"] { width: 120px; }
-select { width: 60px; }
+.background-glow {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(79, 70, 229, 0.15) 0%, rgba(12, 13, 18, 0) 70%);
+    z-index: -1;
+    pointer-events: none;
+}
 
-.btn-calc { background: black; color: white; cursor: pointer; font-weight: bold; width: auto; }
-.btn-limpar { background: white; border: 1px dashed gray; cursor: pointer; width: auto; font-size: 12px; margin-left: 10px; }
+main {
+    display: flex;
+    gap: 30px;
+    position: relative;
+}
 
-.tela { min-height: 500px; margin-top: 20px; }
+.glass-container {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: 32px;
+    padding: 30px;
+    width: 380px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    transition: transform 0.3s ease;
+}
 
-.historico-container {
-    margin-top: 25px;
+header {
+    margin-bottom: 25px;
+}
+
+h1 {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    letter-spacing: 0.5px;
+    color: var(--text-secondary);
+}
+
+.modes {
+    display: flex;
+    gap: 10px;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 5px;
+    border-radius: 12px;
+}
+
+.mode-btn {
+    flex: 1;
+    padding: 8px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.mode-btn.active {
+    background: var(--glass-border);
+    color: white;
+}
+
+.display {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    border-radius: 20px;
+    margin-bottom: 25px;
+    text-align: right;
+    min-height: 100px;
     display: flex;
     flex-direction: column;
+    justify-content: flex-end;
+}
+
+.expression {
+    font-size: 14px;
+    color: var(--text-secondary);
+    min-height: 20px;
+    margin-bottom: 5px;
+    word-wrap: break-word;
+}
+
+.result {
+    font-size: 42px;
+    font-weight: 400;
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
     gap: 12px;
 }
 
-.card {
-    border: 1px solid black;
-    padding: 15px;
-    background: #fdfdfd;
-    width: fit-content;
-    min-width: 320px;
-    font-family: monospace;
+.btn {
+    border: 1px solid transparent;
+    border-radius: 16px;
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    user-select: none;
 }
 
-.card.erro {
-    border-color: red;
-    background: #fff5f5;
-    color: red;
-    font-weight: bold;
+.btn:hover {
+    transform: translateY(-2px);
+    border-color: var(--glass-border);
+}
+
+.btn:active {
+    transform: scale(0.95);
+}
+
+.num { background: var(--btn-num); color: white; }
+.op { background: var(--btn-op); color: #818cf8; font-weight: 600; }
+.sci { background: var(--btn-sci); color: var(--text-secondary); font-size: 14px; }
+.action { background: rgba(239, 68, 68, 0.1); color: #ef4444; font-weight: 600; }
+.equal { 
+    background: var(--btn-equal); 
+    color: white; 
+    grid-row: span 2; 
+    height: auto; 
+    box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3);
+}
+
+.double { grid-column: span 2; }
+
+/* Solucionador de Equações */
+.solver-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    animation: fadeIn 0.3s ease;
+}
+
+.input-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 12px;
+    border-radius: 12px;
+}
+
+.input-group label {
+    font-size: 14px;
+    color: var(--text-secondary);
+    width: 20px;
+}
+
+.input-group input {
+    background: transparent;
+    border: none;
+    color: white;
+    width: 100%;
+    outline: none;
+    font-size: 16px;
+}
+
+.solve-btn {
+    background: var(--accent-color);
+    color: white;
+    padding: 15px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+/* Histórico */
+.history-toggle {
+    margin-top: 20px;
+    background: transparent;
+    border: 1px solid var(--glass-border);
+    color: var(--text-secondary);
+    width: 100%;
+    padding: 10px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.history-sidebar {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: 32px;
+    padding: 25px;
+    width: 300px;
+    height: 600px;
+    overflow-y: auto;
+    display: none; /* Controlado via JS */
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    main { flex-direction: column; align-items: center; }
+    .history-sidebar { width: 380px; height: 300px; }
 }

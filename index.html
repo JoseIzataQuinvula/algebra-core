@@ -2,52 +2,89 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>AlgebraCore v1.0.0</title>
+    <title>AlgebraCore</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
 
-    <h1>AlgebraCore 1.0.0</h1>
+<main>
+    <div class="background-glow"></div>
+    
+    <div class="glass-container" id="calculator">
+        <header>
+            <h1>AlgebraCore</h1>
+            <div class="modes">
+                <button class="mode-btn active" onclick="setMode('calc')">Calculadora</button>
+                <button class="mode-btn" onclick="setMode('eq1')">1º Grau</button>
+                <button class="mode-btn" onclick="setMode('eq2')">2º Grau</button>
+            </div>
+        </header>
 
-    <div class="menu">
-        <button onclick="trocar('operacoes')">Operações Principais</button>
-        <button onclick="trocar('grau1')">Equação 1º Grau</button>
-        <button onclick="trocar('grau2')">Equação 2º Grau</button>
+        <div class="display">
+            <div id="expression" class="expression"></div>
+            <div id="result" class="result">0</div>
+        </div>
+
+        <!-- Calculadora Principal -->
+        <div id="calc-grid" class="grid-container">
+            <!-- Linha 1: Funções Científicas -->
+            <button class="btn sci" onclick="addFunc('Math.sin(')">sin</button>
+            <button class="btn sci" onclick="addFunc('Math.cos(')">cos</button>
+            <button class="btn sci" onclick="addFunc('Math.tan(')">tan</button>
+            <button class="btn sci" onclick="addFunc('Math.log10(')">log</button>
+            
+            <!-- Linha 2 -->
+            <button class="btn sci" onclick="addFunc('Math.sqrt(')">√</button>
+            <button class="btn sci" onclick="addOp('**')">^</button>
+            <button class="btn sci" onclick="addChar('(')">(</button>
+            <button class="btn sci" onclick="addChar(')')">)</button>
+
+            <!-- Teclado Numérico e Ops -->
+            <button class="btn action" onclick="clearDisplay()">AC</button>
+            <button class="btn action" onclick="backspace()">DEL</button>
+            <button class="btn op" onclick="addOp('/')">÷</button>
+            <button class="btn op" onclick="addOp('*')">×</button>
+
+            <button class="btn num" onclick="addChar('7')">7</button>
+            <button class="btn num" onclick="addChar('8')">8</button>
+            <button class="btn num" onclick="addChar('9')">9</button>
+            <button class="btn op" onclick="addOp('-')">−</button>
+
+            <button class="btn num" onclick="addChar('4')">4</button>
+            <button class="btn num" onclick="addChar('5')">5</button>
+            <button class="btn num" onclick="addChar('6')">6</button>
+            <button class="btn op" onclick="addOp('+')">+</button>
+
+            <button class="btn num" onclick="addChar('1')">1</button>
+            <button class="btn num" onclick="addChar('2')">2</button>
+            <button class="btn num" onclick="addChar('3')">3</button>
+            <button class="btn equal" onclick="calculate()">=</button>
+
+            <button class="btn num double" onclick="addChar('0')">0</button>
+            <button class="btn num" onclick="addChar('.')">.</button>
+        </div>
+
+        <!-- Solucionadores de Equações (Injetados por JS ou Ocultos) -->
+        <div id="solver-panel" class="solver-panel" style="display: none;">
+            <!-- Conteúdo será alterado dinamicamente -->
+        </div>
+
+        <button class="history-toggle" onclick="toggleHistory()">Histórico</button>
     </div>
 
-    <hr>
+    <!-- Barra Lateral de Histórico -->
+    <aside id="history-sidebar" class="history-sidebar">
+        <div class="history-header">
+            <h2>Histórico</h2>
+            <button onclick="clearHistory()">Limpar</button>
+        </div>
+        <div id="history-list"></div>
+    </aside>
+</main>
 
-    <div id="operacoes" class="tela">
-        <h3>Operações Principais</h3>
-        <input type="number" id="n1" placeholder="N1">
-        <select id="op">
-            <option>+</option><option>-</option><option>*</option><option>/</option>
-        </select>
-        <input type="number" id="n2" placeholder="N2">
-        <button onclick="calcBasico()" class="btn-calc">Calcular</button>
-        <button onclick="limpar('histBasico')" class="btn-limpar">Limpar Histórico</button>
-        <div id="histBasico" class="historico-container"></div>
-    </div>
-
-    <div id="grau1" class="tela" style="display:none;">
-        <h3>Equação 1º Grau (ax + b = 0)</h3>
-        <span>a:</span> <input type="number" id="a1">
-        <span>b:</span> <input type="number" id="b1">
-        <button onclick="resolver1()" class="btn-calc">Resolver</button>
-        <button onclick="limpar('hist1')" class="btn-limpar">Limpar Histórico</button>
-        <div id="hist1" class="historico-container"></div>
-    </div>
-
-    <div id="grau2" class="tela" style="display:none;">
-        <h3>Equação 2º Grau (ax² + bx + c = 0)</h3>
-        <span>a:</span> <input type="number" id="a2">
-        <span>b:</span> <input type="number" id="b2">
-        <span>c:</span> <input type="number" id="c2">
-        <button onclick="resolver2()" class="btn-calc">Calcular Raízes</button>
-        <button onclick="limpar('hist2')" class="btn-limpar">Limpar Histórico</button>
-        <div id="hist2" class="historico-container"></div>
-    </div>
-
-    <script src="assets/js/script.js"></script>
+<script src="assets/js/script.js"></script>
 </body>
 </html>
