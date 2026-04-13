@@ -7,12 +7,23 @@ window.onload = () => {
     updateHistoryUI();
 };
 
+let currentMode = 'calc';
+let activeInputId = null;
+
 function updateDisplay() {
     document.getElementById('expression').innerText = expression;
     document.getElementById('result').innerText = currentInput || "0";
 }
 
 function addChar(char) {
+    if (currentMode !== 'calc' && activeInputId) {
+        const input = document.getElementById(activeInputId);
+        if (input) {
+            input.value += char;
+            return;
+        }
+    }
+    
     if (currentInput === "0" && char !== ".") currentInput = "";
     currentInput += char;
     updateDisplay();
@@ -53,6 +64,9 @@ function backspace() {
 }
 
 function calculate() {
+    if (currentMode === 'eq1') return executeSolver1();
+    if (currentMode === 'eq2') return executeSolver2();
+    
     let fullExpression = expression + currentInput;
     if (fullExpression === "" || fullExpression.trim() === "") return;
 
@@ -95,38 +109,57 @@ function setMode(mode) {
         grid.style.display = 'grid';
         solver.style.display = 'none';
         btns[0].classList.add('active');
+        currentMode = 'calc';
+        clearDisplay();
     } else if (mode === 'eq1') {
-        grid.style.display = 'none';
-        solver.style.display = 'flex';
+        grid.style.display = 'grid'; // Teclado continua visível
+        solver.style.display = 'block';
         btns[1].classList.add('active');
+        currentMode = 'eq1';
         renderSolver1();
+        document.getElementById('result').innerText = "0";
     } else if (mode === 'eq2') {
-        grid.style.display = 'none';
-        solver.style.display = 'flex';
+        grid.style.display = 'grid'; // Teclado continua visível
+        solver.style.display = 'block';
         btns[2].classList.add('active');
+        currentMode = 'eq2';
         renderSolver2();
+        document.getElementById('result').innerText = "0";
     }
 }
 
 function renderSolver1() {
     document.getElementById('solver-panel').innerHTML = `
-        <h3>Equação do 1º Grau</h3>
-        <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 10px;">ax + b = 0</p>
-        <div class="input-group"><label>a</label><input type="number" id="a1" placeholder="Valor de a"></div>
-        <div class="input-group"><label>b</label><input type="number" id="b1" placeholder="Valor de b"></div>
-        <button class="solve-btn" onclick="executeSolver1()">Resolver</button>
+        <h3 style="font-size: 14px; margin-bottom: 10px;">Equação do 1º Grau: ax + b = 0</h3>
+        <div class="input-group">
+            <label>a</label>
+            <input type="text" id="a1" onfocus="activeInputId='a1'" placeholder="Toque aqui e use o teclado">
+        </div>
+        <div class="input-group">
+            <label>b</label>
+            <input type="text" id="b1" onfocus="activeInputId='b1'" placeholder="Toque aqui e use o teclado">
+        </div>
     `;
+    activeInputId = 'a1'; // Foco padrão
 }
 
 function renderSolver2() {
     document.getElementById('solver-panel').innerHTML = `
-        <h3>Equação do 2º Grau</h3>
-        <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 10px;">ax² + bx + c = 0</p>
-        <div class="input-group"><label>a</label><input type="number" id="a2" placeholder="Valor de a"></div>
-        <div class="input-group"><label>b</label><input type="number" id="b2" placeholder="Valor de b"></div>
-        <div class="input-group"><label>c</label><input type="number" id="c2" placeholder="Valor de c"></div>
-        <button class="solve-btn" onclick="executeSolver2()">Calcular Raízes</button>
+        <h3 style="font-size: 14px; margin-bottom: 10px;">Equação do 2º Grau: ax² + bx + c = 0</h3>
+        <div class="input-group">
+            <label>a</label>
+            <input type="text" id="a2" onfocus="activeInputId='a2'" placeholder="Coeficiente a">
+        </div>
+        <div class="input-group">
+            <label>b</label>
+            <input type="text" id="b2" onfocus="activeInputId='b2'" placeholder="Coeficiente b">
+        </div>
+        <div class="input-group">
+            <label>c</label>
+            <input type="text" id="c2" onfocus="activeInputId='c2'" placeholder="Coeficiente c">
+        </div>
     `;
+    activeInputId = 'a2'; // Foco padrão
 }
 
 function executeSolver1() {

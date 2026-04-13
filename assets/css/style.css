@@ -50,6 +50,9 @@ main {
     background: var(--bg-main);
     padding: 20px;
     border: 3px inset var(--border-light);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
 }
 
 .screen-panel {
@@ -191,13 +194,18 @@ h1 {
 .solver-panel {
     background: var(--bg-main);
     padding: 15px;
-    border: 2px inset var(--border-light);
+    border: 3px inset var(--border-light);
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
 }
 
 .input-group {
-    margin-bottom: 10px;
+    margin-bottom: 20px;
     display: flex;
     align-items: center;
+    gap: 15px;
 }
 
 .input-group label { width: 30px; }

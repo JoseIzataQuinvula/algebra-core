@@ -21,6 +21,10 @@
                     <h1>AlgebraCore</h1>
                 </header>
                 
+                <div id="solver-panel" class="solver-panel" style="display: none; margin-bottom: 20px;">
+                    <!-- Injetado por JS -->
+                </div>
+
                 <div id="calc-grid" class="grid-container">
                     <!-- Funções Científicas -->
                     <button class="btn sci" onclick="addFunc('Math.sin(')">sin</button>
@@ -56,6 +60,10 @@
                     <button class="btn num double" onclick="addChar('0')">0</button>
                     <button class="btn num" onclick="addChar('.')">.</button>
                 </div>
+
+                <div id="solver-panel" class="solver-panel" style="display: none;">
+                    <!-- Injetado por JS -->
+                </div>
             </div>
 
             <!-- Lado Direito: Tela e Dados -->
@@ -69,10 +77,6 @@
                 <div class="display">
                     <div id="expression" class="expression"></div>
                     <div id="result" class="result">0</div>
-                </div>
-
-                <div id="solver-panel" class="solver-panel" style="display: none;">
-                    <!-- Injetado por JS -->
                 </div>
 
                 <div class="history-container-embedded">
