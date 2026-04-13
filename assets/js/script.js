@@ -8,20 +8,40 @@ window.onload = () => {
 };
 
 let currentMode = 'calc';
-let activeInputId = null;
+let solverStep = 0; // 0: A, 1: B, 2: C
+let solverData = { a: "", b: "", c: "" };
 
 function updateDisplay() {
-    document.getElementById('expression').innerText = expression;
-    document.getElementById('result').innerText = currentInput || "0";
+    const exprEl = document.getElementById('expression');
+    const resEl = document.getElementById('result');
+    const actionBtn = document.getElementById('btn-action');
+
+    if (currentMode === 'calc') {
+        exprEl.innerText = expression;
+        resEl.innerText = currentInput || "0";
+        if (actionBtn) actionBtn.innerText = "=";
+    } else {
+        const varLabel = solverStep === 0 ? "A" : (solverStep === 1 ? "B" : "C");
+        const modeLabel = currentMode === 'eq1' ? "EQUAÇÃO 1º" : "EQUAÇÃO 2º";
+        exprEl.innerText = `${modeLabel} | DIGITE ${varLabel}:`;
+        resEl.innerText = (solverData[varLabel.toLowerCase()] || "") + "_";
+
+        // Lógica do texto do botão
+        if (actionBtn) {
+            const isLastStep = (currentMode === 'eq1' && solverStep === 1) || 
+                              (currentMode === 'eq2' && solverStep === 2);
+            actionBtn.innerText = isLastStep ? "=" : "AVANÇAR";
+        }
+    }
 }
 
 function addChar(char) {
-    if (currentMode !== 'calc' && activeInputId) {
-        const input = document.getElementById(activeInputId);
-        if (input) {
-            input.value += char;
-            return;
-        }
+    if (currentMode !== 'calc') {
+        const key = solverStep === 0 ? 'a' : (solverStep === 1 ? 'b' : 'c');
+        if (char === "." && solverData[key].includes(".")) return;
+        solverData[key] += char;
+        updateDisplay();
+        return;
     }
     
     if (currentInput === "0" && char !== ".") currentInput = "";
@@ -55,6 +75,12 @@ function clearDisplay() {
 }
 
 function backspace() {
+    if (currentMode !== 'calc') {
+        const key = solverStep === 0 ? 'a' : (solverStep === 1 ? 'b' : 'c');
+        solverData[key] = solverData[key].slice(0, -1);
+        updateDisplay();
+        return;
+    }
     if (currentInput !== "") {
         currentInput = currentInput.slice(0, -1);
     } else if (expression !== "") {
@@ -64,8 +90,30 @@ function backspace() {
 }
 
 function calculate() {
-    if (currentMode === 'eq1') return executeSolver1();
-    if (currentMode === 'eq2') return executeSolver2();
+    if (currentMode !== 'calc') {
+        // Lógica de progressão do Solver
+        if (currentMode === 'eq1') {
+            if (solverStep === 0) {
+                if (solverData.a === "" || parseFloat(solverData.a) === 0) return alert("A não pode ser zero");
+                solverStep = 1;
+            } else {
+                executeSolver1();
+                currentMode = 'calc'; // Reseta após resolver
+            }
+        } else if (currentMode === 'eq2') {
+            if (solverStep === 0) {
+                if (solverData.a === "" || parseFloat(solverData.a) === 0) return alert("A não pode ser zero");
+                solverStep = 1;
+            } else if (solverStep === 1) {
+                solverStep = 2;
+            } else {
+                executeSolver2();
+                currentMode = 'calc';
+            }
+        }
+        updateDisplay();
+        return;
+    }
     
     let fullExpression = expression + currentInput;
     if (fullExpression === "" || fullExpression.trim() === "") return;
@@ -99,33 +147,23 @@ function calculate() {
 
 // Alternância de Modos
 function setMode(mode) {
-    const grid = document.getElementById('calc-grid');
-    const solver = document.getElementById('solver-panel');
     const btns = document.querySelectorAll('.mode-btn');
-
     btns.forEach(b => b.classList.remove('active'));
 
+    currentMode = mode;
+    solverStep = 0;
+    solverData = { a: "", b: "", c: "" };
+    expression = "";
+    currentInput = "";
+
     if (mode === 'calc') {
-        grid.style.display = 'grid';
-        solver.style.display = 'none';
         btns[0].classList.add('active');
-        currentMode = 'calc';
-        clearDisplay();
     } else if (mode === 'eq1') {
-        grid.style.display = 'grid'; // Teclado continua visível
-        solver.style.display = 'block';
         btns[1].classList.add('active');
-        currentMode = 'eq1';
-        renderSolver1();
-        document.getElementById('result').innerText = "0";
     } else if (mode === 'eq2') {
-        grid.style.display = 'grid'; // Teclado continua visível
-        solver.style.display = 'block';
         btns[2].classList.add('active');
-        currentMode = 'eq2';
-        renderSolver2();
-        document.getElementById('result').innerText = "0";
     }
+    updateDisplay();
 }
 
 function renderSolver1() {
@@ -163,29 +201,19 @@ function renderSolver2() {
 }
 
 function executeSolver1() {
-    const a = parseFloat(document.getElementById('a1').value);
-    const b = parseFloat(document.getElementById('b1').value);
+    const a = parseFloat(solverData.a);
+    const b = parseFloat(solverData.b);
 
-    if (isNaN(a) || isNaN(b)) return alert("Preencha todos os campos");
-    
-    if (a === 0) {
-        alert("O valor de 'a' não pode ser zero");
-    } else {
-        const x = -b / a;
-        const res = `x = ${x.toFixed(2)}`;
-        saveHistory(`${a}x + ${b} = 0 → ${res}`);
-        document.getElementById('result').innerText = res;
-    }
+    const x = -b / a;
+    const res = `x = ${x.toFixed(2)}`;
+    saveHistory(`${a}x + ${b} = 0 → ${res}`);
+    document.getElementById('result').innerText = res;
 }
 
 function executeSolver2() {
-    const a = parseFloat(document.getElementById('a2').value);
-    const b = parseFloat(document.getElementById('b2').value);
-    const c = parseFloat(document.getElementById('c2').value);
-
-    if (isNaN(a) || isNaN(b) || isNaN(c)) return alert("Preencha todos os campos");
-
-    if (a === 0) return alert("'a' não pode ser zero");
+    const a = parseFloat(solverData.a);
+    const b = parseFloat(solverData.b);
+    const c = parseFloat(solverData.c);
 
     const delta = (b * b) - (4 * a * c);
     let res;
@@ -194,7 +222,7 @@ function executeSolver2() {
     } else {
         const x1 = (-b + Math.sqrt(delta)) / (2 * a);
         const x2 = (-b - Math.sqrt(delta)) / (2 * a);
-        res = `x1: ${x1.toFixed(2)} | x2: ${x2.toFixed(2)}`;
+        res = `x1:${x1.toFixed(2)} | x2:${x2.toFixed(2)}`;
     }
     saveHistory(`${a}x² + ${b}x + ${c} = 0 → ${res}`);
     document.getElementById('result').innerText = res;

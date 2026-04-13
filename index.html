@@ -21,44 +21,30 @@
                     <h1>AlgebraCore</h1>
                 </header>
                 
-                <div id="solver-panel" class="solver-panel" style="display: none; margin-bottom: 20px;">
-                    <!-- Injetado por JS -->
-                </div>
-
                 <div id="calc-grid" class="grid-container">
-                    <!-- Funções Científicas -->
-                    <button class="btn sci" onclick="addFunc('Math.sin(')">sin</button>
-                    <button class="btn sci" onclick="addFunc('Math.cos(')">cos</button>
-                    <button class="btn sci" onclick="addFunc('Math.tan(')">tan</button>
-                    <button class="btn sci" onclick="addFunc('Math.log10(')">log</button>
-                    
-                    <button class="btn sci" onclick="addFunc('Math.sqrt(')">√</button>
-                    <button class="btn sci" onclick="addOp('**')">^</button>
-                    <button class="btn sci" onclick="addChar('(')">(</button>
-                    <button class="btn sci" onclick="addChar(')')">)</button>
-
-                    <button class="btn action" onclick="clearDisplay()">AC</button>
-                    <button class="btn action" onclick="backspace()">DEL</button>
-                    <button class="btn op" onclick="addOp('/')">÷</button>
-                    <button class="btn op" onclick="addOp('*')">×</button>
+                    <button class="btn action double" onclick="clearDisplay()">AC</button>
+                    <button class="btn action double" onclick="backspace()">DEL</button>
 
                     <button class="btn num" onclick="addChar('7')">7</button>
                     <button class="btn num" onclick="addChar('8')">8</button>
                     <button class="btn num" onclick="addChar('9')">9</button>
-                    <button class="btn op" onclick="addOp('-')">−</button>
+                    <button class="btn op" onclick="addOp('/')">÷</button>
 
                     <button class="btn num" onclick="addChar('4')">4</button>
                     <button class="btn num" onclick="addChar('5')">5</button>
                     <button class="btn num" onclick="addChar('6')">6</button>
-                    <button class="btn op" onclick="addOp('+')">+</button>
+                    <button class="btn op" onclick="addOp('*')">×</button>
 
                     <button class="btn num" onclick="addChar('1')">1</button>
                     <button class="btn num" onclick="addChar('2')">2</button>
                     <button class="btn num" onclick="addChar('3')">3</button>
-                    <button class="btn equal" onclick="calculate()">=</button>
+                    <button class="btn op" onclick="addOp('-')">−</button>
 
                     <button class="btn num double" onclick="addChar('0')">0</button>
                     <button class="btn num" onclick="addChar('.')">.</button>
+                    <button class="btn op" onclick="addOp('+')">+</button>
+
+                    <button class="btn equal double" id="btn-action" style="grid-column: span 4; margin-top: 10px;" onclick="calculate()">=</button>
                 </div>
 
                 <div id="solver-panel" class="solver-panel" style="display: none;">

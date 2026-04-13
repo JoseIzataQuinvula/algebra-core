@@ -136,7 +136,7 @@ h1 {
     height: 80px;
     border: 3px outset var(--border-light);
     background: var(--bg-main);
-    font-size: 22px;
+    font-size: 20px;
     font-weight: bold;
     cursor: pointer;
     display: flex;
