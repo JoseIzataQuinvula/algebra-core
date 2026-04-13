@@ -57,19 +57,11 @@ function calculate() {
     if (fullExpression === "" || fullExpression.trim() === "") return;
 
     try {
-        // Sanitizar e preparar para eval
+        // Sanitizar e preparar para eval (sem auto-correção)
         let evalExpr = fullExpression
             .replace(/×/g, '*')
             .replace(/÷/g, '/')
             .replace(/−/g, '-');
-
-        // Adicionar parênteses faltantes se necessário
-        let openBrackets = (evalExpr.match(/\(/g) || []).length;
-        let closeBrackets = (evalExpr.match(/\)/g) || []).length;
-        for (let i = 0; i < openBrackets - closeBrackets; i++) {
-            evalExpr += ")";
-            fullExpression += ")";
-        }
 
         const result = eval(evalExpr);
         
@@ -86,13 +78,8 @@ function calculate() {
         currentInput = formattedResult.toString();
         updateDisplay();
     } catch (e) {
+        // Mostra ERROR e para por aqui, como as máquinas antigas
         document.getElementById('result').innerText = "ERROR";
-        // Não apaga a expressão imediatamente para o usuário ver o erro
-        setTimeout(() => {
-            if (document.getElementById('result').innerText === "ERROR") {
-                clearDisplay();
-            }
-        }, 2000);
     }
 }
 

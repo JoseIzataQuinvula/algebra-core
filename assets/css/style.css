@@ -13,14 +13,14 @@
     margin: 0;
     padding: 0;
     font-family: 'Courier New', Courier, monospace;
-    border-radius: 0 !important; /* Garantir cantos quadrados */
+    border-radius: 0 !important;
 }
 
 body {
     background-color: var(--border-dark);
     color: var(--btn-text);
-    overflow: hidden;
-    height: 100vh;
+    overflow-x: hidden;
+    min-height: 100vh;
     width: 100vw;
 }
 
@@ -34,7 +34,7 @@ main {
     width: 100vw;
     height: 100vh;
     padding: 20px;
-    border: 4px outset var(--highlight);
+    border: 4px outset var(--border-light);
     display: flex;
     flex-direction: column;
 }
@@ -95,7 +95,7 @@ h1 {
 .mode-btn.active {
     border: 2px inset var(--border-light);
     background: #d4d4d4;
-    color: #000080; /* Azul clássico Win95 */
+    color: #000080;
 }
 
 .display {
@@ -160,7 +160,6 @@ h1 {
 
 .double { grid-column: span 2; }
 
-/* Histórico Embutido Retro */
 .history-container-embedded {
     flex: 1;
     margin-top: 10px;
@@ -218,5 +217,53 @@ h1 {
     cursor: pointer;
 }
 
-/* Background Retro Glow Removal */
 .background-glow { display: none; }
+
+/* Adaptação Mobile */
+@media (max-width: 768px) {
+    body {
+        overflow-y: auto;
+        height: auto;
+    }
+
+    .glass-container {
+        height: auto;
+        min-height: 100vh;
+        padding: 10px;
+    }
+
+    .atm-layout {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .controls-panel {
+        order: 2;
+        padding: 15px;
+    }
+
+    .screen-panel {
+        order: 1;
+        padding: 15px;
+        min-height: 300px;
+    }
+
+    .display {
+        padding: 15px;
+        min-height: 100px;
+        margin-bottom: 15px;
+    }
+
+    .result {
+        font-size: 36px;
+    }
+
+    .btn {
+        height: 70px;
+        font-size: 20px;
+    }
+
+    .history-container-embedded {
+        max-height: 200px;
+    }
+}
